@@ -171,10 +171,8 @@ sensor:
         ESP_LOGD("BLE", "Received data: %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X ",
                   x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15], x[16], x[17], x[18], x[19]);
       
-        id(temperature_burner).publish_state((int16_t)(((uint8_t)x[14])<<8)|x[13]);
-        id(heater_mode).publish_state(x[8] == 2 ? "Automatic" : "Level");
         id(status_burner).publish_state(x[3] > 0);
-
+      
         // Set States
         if (x[5] < sizeof(states)/sizeof(states[0])) {
           id(status_glow_plug).publish_state(states[x[5]]);
@@ -182,20 +180,24 @@ sensor:
           ESP_LOGD("Error", "Received state does not match known possible states: %02d", x[5]);
         }
 
+        id(altitude).publish_state(((x[7])<<8)|x[6]);
+        id(heater_mode).publish_state(x[8] == 2 ? "Automatic" : "Level");
+        id(status_power).publish_state(x[9]);
+        id(fan_speed).publish_state((int)x[10] + 1);
+        id(battery_voltage).publish_state((((x[12])<<8)|x[11]) / 10.0);
+        id(temperature_burner).publish_state((int16_t)(((uint8_t)x[14])<<8)|x[13]);
+        id(temperature_remote).publish_state((int16_t)(((uint8_t)x[16])<<8)|x[15]);
+        id(error_code).publish_state(x[17]);
+      
         if(!id(status_burner).state){
           if (!isnan(id(altitude).state)) id(altitude).publish_state(NAN);
-          if (!isnan(id(fan_speed).state)) id(fan_speed).publish_state(NAN);
           if (!isnan(id(battery_voltage).state)) id(battery_voltage).publish_state(NAN);
         }
-        else{
-          id(altitude).publish_state(((x[7])<<8)|x[6]);
-          id(fan_speed).publish_state((int)x[10] + 1);
-          id(battery_voltage).publish_state((((x[12])<<8)|x[11]) / 10.0);
-        }
       
-        id(status_power).publish_state(x[9]);
-        id(error_code).publish_state(x[17]);
-        id(temperature_remote).publish_state((int16_t)(((uint8_t)x[16])<<8)|x[15]);
+        if ("Idle" == id(status_glow_plug).state) {
+          id(fan_speed).publish_state(0);
+          id(status_power).publish_state(0);
+        }
       }
       return 0;
 
