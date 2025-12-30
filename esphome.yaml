@@ -247,7 +247,7 @@ number:
               lambda: 'return id(heater_mode).state != "Automatic";'
             then:
               - script.execute: set_heater_mode_automatic
-        - delay: 1s
+              - delay: 1s
         - script.execute:
             id: send_ble_heater_level
             level: !lambda 'return (int)id(heater_temperature).state;'
@@ -269,7 +269,7 @@ number:
               lambda: 'return id(heater_mode).state != "Level";'
             then:
               - script.execute: set_heater_mode_level
-        - delay: 1s
+              - delay: 1s
         - script.execute:
             id: send_ble_heater_level
             level: !lambda 'return (int)id(heater_level).state;'
