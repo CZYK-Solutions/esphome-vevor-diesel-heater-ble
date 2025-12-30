@@ -56,11 +56,6 @@ text_sensor:
     name: "Glow Plug Status"
     id: status_glow_plug
     icon: "mdi:induction"
-  - platform: template
-    name: "Glow Plug Status (Raw)"
-    id: status_glow_plug_raw
-    icon: "mdi:induction"
-    entity_category: diagnostic
 
   - platform: template
     name: "Heater Mode"
@@ -181,7 +176,6 @@ sensor:
         id(status_burner).publish_state(x[3] > 0);
 
         // Set States
-        id(status_glow_plug_raw).publish_state(str_sprintf("%d", x[5]));
         if (x[5] < sizeof(states)/sizeof(states[0])) {
           id(status_glow_plug).publish_state(states[x[5]]);
         } else {
