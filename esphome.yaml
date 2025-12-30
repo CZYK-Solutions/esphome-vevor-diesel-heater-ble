@@ -330,3 +330,6 @@ script:
           service_uuid: ${service_uuid}
           characteristic_uuid: ${char_fff1_uuid}
           value: [0xAA, 0x55, 0x0C, 0x22, 0x03, 0x00, 0x00, 0x31]
+      - lambda: |-
+          id(heater_temperature).publish_state(0);
+          id(heater_level).publish_state(0);
