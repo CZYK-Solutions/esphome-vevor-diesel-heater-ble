@@ -142,17 +142,13 @@ sensor:
     icon: "mdi:home-thermometer"
     update_interval: 5s
     lambda: |-
-      float value = NAN;
+      float value = id(use_external_temperature).state 
+        ? id(external_temperature).state 
+        : id(temperature_remote).state;
 
-      if (id(use_external_temperature).state && !isnan(id(external_temperature).state)) {
-        value = id(external_temperature).state;
-      }
-
-      if (isnan(value) && !isnan(id(temperature_remote).state)) {
-        value = id(temperature_remote).state;
-      }
-
-      return isnan(value) ? NAN : round(value * 10.0) / 10.0;
+      return isnan(value) 
+        ? NAN 
+        : round(value * 10.0) / 10.0;
 
   - platform: template
     name: "Temperature Burner"
