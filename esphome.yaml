@@ -251,7 +251,7 @@ number:
               - script.execute: set_heater_mode_automatic
               - delay: 1s
         - script.execute:
-            id: send_ble_heater_level
+            id: heater_set_level_or_temp
             level: !lambda 'return (int)id(heater_temperature).state;'
 
   - platform: template
@@ -273,10 +273,11 @@ number:
               - script.execute: set_heater_mode_level
               - delay: 1s
         - script.execute:
-            id: send_ble_heater_level
+            id: heater_set_level_or_temp
             level: !lambda 'return (int)id(heater_level).state;'
 
 script:
+  # Interface
   - id: heater_turn_on
     then:
       - ble_client.ble_write:
@@ -284,6 +285,39 @@ script:
           service_uuid: ${service_uuid}
           characteristic_uuid: ${char_fff1_uuid}
           value: [0xAA, 0x55, 0x0C, 0x22, 0x03, 0x01, 0x00, 0x32]
+  - id: heater_turn_off
+    then:
+      - ble_client.ble_write:
+          id: heater_ble
+          service_uuid: ${service_uuid}
+          characteristic_uuid: ${char_fff1_uuid}
+          value: [0xAA, 0x55, 0x0C, 0x22, 0x03, 0x00, 0x00, 0x31]
+      - lambda: |-
+          id(heater_temperature).publish_state(0);
+          id(heater_level).publish_state(0);
+  - id: heater_set_percentage
+    parameters:
+      percentage: int
+    then:
+      - if:
+          condition:
+            lambda: 'return id(heater_mode).state != "Level";'
+          then:
+            - script.execute: set_heater_mode_level
+            - delay: 1s
+      - lambda: |-
+          if (percentage > 0) {
+            id(heater_turn_on).execute();
+          }
+          
+          int level = static_cast<int>(roundf(percentage / 10.0f));
+          id(heater_set_level_or_temp).execute(level);
+          
+          if (percentage == 0) {
+            id(heater_turn_off).execute();
+          }
+
+  #  Heater Specific
   - id: set_heater_mode_automatic
     then:
       - ble_client.ble_write:
@@ -298,7 +332,7 @@ script:
           service_uuid: ${service_uuid}
           characteristic_uuid: ${char_fff1_uuid}
           value: [0xAA, 0x55, 0x0C, 0x22, 0x02, 0x01, 0x00, 0x31]
-  - id: send_ble_heater_level
+  - id: heater_set_level_or_temp
     parameters:
       level: int
     then:
@@ -325,13 +359,3 @@ script:
           else{
             id(heater_level).publish_state((float) level);
           }
-  - id: heater_turn_off
-    then:
-      - ble_client.ble_write:
-          id: heater_ble
-          service_uuid: ${service_uuid}
-          characteristic_uuid: ${char_fff1_uuid}
-          value: [0xAA, 0x55, 0x0C, 0x22, 0x03, 0x00, 0x00, 0x31]
-      - lambda: |-
-          id(heater_temperature).publish_state(0);
-          id(heater_level).publish_state(0);
