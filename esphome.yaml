@@ -63,6 +63,17 @@ text_sensor:
     icon: "mdi:radiator"
     entity_category: diagnostic
 
+  - platform: template
+    name: "Power Status"
+    id: status_power
+    icon: "mdi:speedometer"
+
+  - platform: template
+    name: "Fan Speed"
+    id: fan_speed
+    icon: "mdi:fan"
+    entity_category: diagnostic
+
 binary_sensor:
   - platform: template
     name: "Heater Status"
@@ -96,19 +107,6 @@ sensor:
     accuracy_decimals: 0
     device_class: distance
     icon: "mdi:summit"
-    entity_category: diagnostic
-
-  - platform: template
-    name: "Power Status"
-    id: status_power
-    accuracy_decimals: 0
-    icon: "mdi:speedometer"
-
-  - platform: template
-    name: "Fan Speed"
-    id: fan_speed
-    accuracy_decimals: 0
-    icon: "mdi:fan"
     entity_category: diagnostic
 
   - platform: template
@@ -182,8 +180,8 @@ sensor:
 
         id(altitude).publish_state(((x[7])<<8)|x[6]);
         id(heater_mode).publish_state(x[8] == 2 ? "Automatic" : "Level");
-        id(status_power).publish_state(x[9]);
-        id(fan_speed).publish_state((int)x[10] + 1);
+        id(status_power).publish_state(std::to_string((int)x[9]));
+        id(fan_speed).publish_state(float)(std::to_string((int)x[10] + 1));
         id(battery_voltage).publish_state((((x[12])<<8)|x[11]) / 10.0);
         id(temperature_burner).publish_state((int16_t)(((uint8_t)x[14])<<8)|x[13]);
         id(temperature_remote).publish_state((int16_t)(((uint8_t)x[16])<<8)|x[15]);
