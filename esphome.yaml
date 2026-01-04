@@ -314,6 +314,19 @@ script:
           if (percentage == 0) {
             id(heater_turn_off).execute();
           }
+  - id: heater_set_temperature
+    parameters:
+      temperature: float
+    then:
+      - if:
+          condition:
+            lambda: 'return id(heater_mode).state != "Automatic";'
+          then:
+            - script.execute: set_heater_mode_automatic
+            - delay: 1s
+      - lambda: |-
+          id(heater_turn_on).execute();
+          id(heater_set_level_or_temp).execute(temperature);
 
   #  Heater Specific
   - id: set_heater_mode_automatic

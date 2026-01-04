@@ -39,6 +39,17 @@ Sets the desired heating power level as a percentage (0–100%).
 
 - `level` _(int)_: The desired power level of the heater, as a percentage. Value must be between 0 (off) and 100 (full power).
 
+#### `heater_set_temperature`
+
+**Description:**
+
+Sets the desired target temperature in °C as float (8.0 - 36.0).
+
+**Parameters:**
+
+- `temperature` _(float)_: The desired target temperature in °C. Value must be between 8.0 and 30.0.
+
+
 ## ⚠️ DISCLAIMER
 
 This project is provided for **educational purposes only**. It is not affiliated with or endorsed by Vevor or any related manufacturers.
