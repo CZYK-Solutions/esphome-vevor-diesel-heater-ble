@@ -1,7 +1,7 @@
 substitutions:
   name: vevor-ble
   friendly_name: Vevor Diesel Heater
-  mac_address: "00:11:22:33:44:55"
+  mac_address: "AA:BB:CC:DD:EE:FF"
 
   service_uuid: "0000ffe0-0000-1000-8000-00805f9b34fb"
   char_fff1_uuid: "0000ffe1-0000-1000-8000-00805f9b34fb"
