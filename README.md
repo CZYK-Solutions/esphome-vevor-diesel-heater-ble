@@ -29,7 +29,7 @@ Turns the heater off.
 
 No parameters required.
 
-#### `heater_set_percentage`
+#### `heater_set_power`
 
 **Description:**
 
