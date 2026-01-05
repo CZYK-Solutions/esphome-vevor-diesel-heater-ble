@@ -94,21 +94,12 @@ sensor:
   - platform: template
     name: "Temperature (remote)"
     id: temperature_remote
+    disabled_by_default: true
     unit_of_measurement: "°C"
     accuracy_decimals: 1
     icon: "mdi:home-thermometer"
     entity_category: diagnostic
 
-  # Home Assistant temperature source
-  - platform: homeassistant
-    name: "Temperature (external)"
-    id: external_temperature
-    unit_of_measurement: "°C"
-    accuracy_decimals: 1
-    icon: "mdi:home-thermometer"
-    entity_id: sensor.indoor_temperature
-
-  # Selected temperature for PID
   - platform: template
     name: "Room Temperature"
     id: room_temperature
@@ -117,12 +108,10 @@ sensor:
     icon: "mdi:home-thermometer"
     update_interval: 5s
     lambda: |-
-      float value = id(use_external_temperature).state 
-        ? id(external_temperature).state 
-        : id(temperature_remote).state;
+      float value = id(${room_temperature_source_id}).state;
 
-      return isnan(value) 
-        ? NAN 
+      return isnan(value)
+        ? NAN
         : round(value * 10.0) / 10.0;
 
   - platform: template
@@ -199,13 +188,6 @@ switch:
 
     turn_off_action:
       - script.execute: heater_turn_off
-
-  - platform: template
-    id: use_external_temperature
-    name: "Use External Temp Sensor"
-    optimistic: true
-    restore_mode: RESTORE_DEFAULT_ON
-    entity_category: config
 
 
 # =========================
