@@ -35,8 +35,8 @@ interval:
 # =========================
 text_sensor:
   - platform: template
-    name: "Glow Plug Status"
-    id: status_glow_plug
+    name: "Heater Glow Plug Status"
+    id: heater_glow_plug_status
     icon: "mdi:induction"
 
   - platform: template
@@ -46,20 +46,20 @@ text_sensor:
     entity_category: diagnostic
 
   - platform: template
-    name: "Power Status"
-    id: status_power
+    name: "Heater Power Status"
+    id: heater_power_status
     icon: "mdi:speedometer"
 
   - platform: template
-    name: "Fan Speed"
-    id: fan_speed
+    name: "Heater Fan Speed"
+    id: heater_fan_speed
     icon: "mdi:fan"
     entity_category: diagnostic
 
 binary_sensor:
   - platform: template
     name: "Heater Status"
-    id: status_burner
+    id: heater_burner_status
     icon: "mdi:radiator"
     device_class: running
 
@@ -68,14 +68,14 @@ binary_sensor:
 # =========================
 sensor:
   - platform: template
-    name: "Error Code"
-    id: error_code
+    name: "Heater Error Code"
+    id: heater_error_code
     accuracy_decimals: 0
     entity_category: diagnostic
 
   - platform: template
-    name: "Battery Voltage"
-    id: battery_voltage
+    name: "Heater Battery Voltage"
+    id: heater_battery_voltage
     unit_of_measurement: "V"
     accuracy_decimals: 1
     device_class: voltage
@@ -83,8 +83,8 @@ sensor:
     entity_category: diagnostic
 
   - platform: template
-    name: "Altitude"
-    id: altitude
+    name: "Heater Altitude"
+    id: heater_altitude
     unit_of_measurement: "m"
     accuracy_decimals: 0
     device_class: distance
@@ -92,42 +92,17 @@ sensor:
     entity_category: diagnostic
 
   - platform: template
-    name: "Temperature (remote)"
-    id: temperature_remote
+    name: "Heater Room Temperature"
+    id: heater_room_temperature
     unit_of_measurement: "°C"
     accuracy_decimals: 1
     icon: "mdi:home-thermometer"
     entity_category: diagnostic
-
-  # Home Assistant temperature source
-  - platform: homeassistant
-    name: "Temperature (external)"
-    id: external_temperature
-    unit_of_measurement: "°C"
-    accuracy_decimals: 1
-    icon: "mdi:home-thermometer"
-    entity_id: sensor.indoor_temperature
-
-  # Selected temperature for PID
-  - platform: template
-    name: "Room Temperature"
-    id: room_temperature
-    unit_of_measurement: "°C"
-    accuracy_decimals: 1
-    icon: "mdi:home-thermometer"
-    update_interval: 5s
-    lambda: |-
-      float value = id(use_external_temperature).state 
-        ? id(external_temperature).state 
-        : id(temperature_remote).state;
-
-      return isnan(value) 
-        ? NAN 
-        : round(value * 10.0) / 10.0;
+    disabled_by_default: true
 
   - platform: template
-    name: "Temperature Burner"
-    id: temperature_burner
+    name: "Heater Burner Temperature"
+    id: heater_burner_temperature
     unit_of_measurement: "°C"
     accuracy_decimals: 0
     icon: "mdi:radiator"
@@ -151,32 +126,32 @@ sensor:
         ESP_LOGD("BLE", "Received data: %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X ",
                   x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10], x[11], x[12], x[13], x[14], x[15], x[16], x[17], x[18], x[19]);
       
-        id(status_burner).publish_state(x[3] > 0);
+        id(heater_burner_status).publish_state(x[3] > 0);
       
         // Set States
         if (x[5] < sizeof(states)/sizeof(states[0])) {
-          id(status_glow_plug).publish_state(states[x[5]]);
+          id(heater_glow_plug_status).publish_state(states[x[5]]);
         } else {
           ESP_LOGD("Error", "Received state does not match known possible states: %02d", x[5]);
         }
 
-        id(altitude).publish_state(((x[7])<<8)|x[6]);
+        id(heater_altitude).publish_state(((x[7])<<8)|x[6]);
         id(heater_mode).publish_state(x[8] == 2 ? "Automatic" : "Level");
-        id(status_power).publish_state(std::to_string((int)x[9]));
-        id(fan_speed).publish_state(std::to_string((int)x[10] + 1));
-        id(battery_voltage).publish_state((((x[12])<<8)|x[11]) / 10.0);
-        id(temperature_burner).publish_state((int16_t)(((uint8_t)x[14])<<8)|x[13]);
-        id(temperature_remote).publish_state((int16_t)(((uint8_t)x[16])<<8)|x[15]);
-        id(error_code).publish_state(x[17]);
+        id(heater_power_status).publish_state(std::to_string((int)x[9]));
+        id(heater_fan_speed).publish_state(std::to_string((int)x[10] + 1));
+        id(heater_battery_voltage).publish_state((((x[12])<<8)|x[11]) / 10.0);
+        id(heater_burner_temperature).publish_state((int16_t)(((uint8_t)x[14])<<8)|x[13]);
+        id(heater_room_temperature).publish_state((int16_t)(((uint8_t)x[16])<<8)|x[15]);
+        id(heater_error_code).publish_state(x[17]);
       
-        if(!id(status_burner).state){
-          if (!isnan(id(altitude).state)) id(altitude).publish_state(NAN);
-          if (!isnan(id(battery_voltage).state)) id(battery_voltage).publish_state(NAN);
+        if(!id(heater_burner_status).state){
+          if (!isnan(id(heater_altitude).state)) id(heater_altitude).publish_state(NAN);
+          if (!isnan(id(heater_battery_voltage).state)) id(heater_battery_voltage).publish_state(NAN);
         }
       
-        if ("Idle" == id(status_glow_plug).state) {
-          id(fan_speed).publish_state("0");
-          id(status_power).publish_state("0");
+        if ("Idle" == id(heater_glow_plug_status).state) {
+          id(heater_fan_speed).publish_state("0");
+          id(heater_power_status).publish_state("0");
         }
       }
       return 0;
@@ -192,20 +167,13 @@ switch:
     icon: "mdi:radiator"
     optimistic: true
     lambda: |-
-      return id(status_burner).state;
+      return id(heater_burner_status).state;
 
     turn_on_action:
       - script.execute: heater_turn_on
 
     turn_off_action:
       - script.execute: heater_turn_off
-
-  - platform: template
-    id: use_external_temperature
-    name: "Use External Temp Sensor"
-    optimistic: true
-    restore_mode: RESTORE_DEFAULT_ON
-    entity_category: config
 
 
 # =========================

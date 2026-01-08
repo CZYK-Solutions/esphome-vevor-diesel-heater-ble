@@ -21,6 +21,7 @@ packages:
   base:
     url: https://github.com/CZYK-Solutions/esphome-vevor-diesel-heater-ble
     files: [esphome.yaml]
+    # Optional: you can pin to a specific release version if needed
     ref: release/v1
 
 substitutions:
