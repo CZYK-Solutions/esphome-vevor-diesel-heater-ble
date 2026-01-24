@@ -1,0 +1,56 @@
+sensor:
+  - platform: template
+    name: "Heater Debug BIT 1"
+    id: heater_debug_bit_1
+    state_class: "measurement"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    disabled_by_default: true
+
+  - platform: template
+    name: "Heater Debug BIT 2"
+    id: heater_debug_bit_2
+    state_class: "measurement"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    disabled_by_default: true
+
+  - platform: template
+    name: "Heater Debug BIT 4"
+    id: heater_debug_bit_4
+    state_class: "measurement"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    disabled_by_default: true
+
+  - platform: template
+    name: "Heater Debug BIT 14"
+    id: heater_debug_bit_14
+    state_class: "measurement"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    disabled_by_default: true
+
+  - platform: template
+    name: "Heater Debug BIT 16"
+    id: heater_debug_bit_16
+    state_class: "measurement"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    disabled_by_default: true
+
+  - platform: template
+    name: "Heater Debug BIT 18"
+    id: heater_debug_bit_18
+    state_class: "measurement"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    disabled_by_default: true
+
+  - platform: template
+    name: "Heater Debug BIT 19"
+    id: heater_debug_bit_19
+    state_class: "measurement"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    disabled_by_default: true

@@ -28,4 +28,3 @@ jobs:
 
       - name: Validate ESPHome config
         run: esphome config esphome.yaml
-
