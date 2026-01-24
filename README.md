@@ -135,6 +135,14 @@ Sets the desired target temperature in °C as float (8.0 - 36.0).
 > - This software is provided **“as is”, without warranty** of any kind — express or implied.
 > - You use this at your own risk.
 
+## Coffee?
+
+If you find this project useful, consider buying me a coffee to support further development!
+
+<a href="https://www.buymeacoffee.com/czyk" target="_blank">
+  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="40">
+</a>
+
 ## Thanks
 - [iotmaestro/vevor-heater-ble](https://github.com/iotmaestro/vevor-heater-ble) for figuring out the BLE protocol. 
 - [spin877/Bruciatore_BLE](https://github.com/spin877/Bruciatore_BLE) for writing similar projects that inspired this work.
