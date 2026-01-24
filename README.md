@@ -68,10 +68,10 @@ You may further automate and customize the heater using available scripts accord
 - **Heater Target Temperature**: Set your desired room temperature.
 - **Heater Target Power**: Set the heater’s output power (0–100%).
 
-**Heater Room Temperature Correction**:
+- **Heater Room Temperature Correction**:
 Use this to adjust the reported room temperature if the heater’s internal sensor is inaccurate (e.g., always reading too high or too low). This offset is applied to the measured temperature shown in ESPHome and Home Assistant. You can also use this to shift the effective control range (e.g., set +8°C on the heater and -8°C here to achieve a 0–30°C range). The heater’s own display will show its uncorrected value.
 
-**Heater Target Temperature Correction**:
+- **Heater Target Temperature Correction**:
 Use this to increase or decrease the internal target temperature set on the heater. For example, if the heater consistently stays 1°C below the set target, you can set a +1°C correction here to compensate.
 
 ## Interface
@@ -84,12 +84,6 @@ Use this to increase or decrease the internal target temperature set on the heat
 | `heater_turn_off`        | Turn the heater off                         | None                      |
 | `heater_set_power`       | Set heating power level (0–100%)            | `level` _(int, 0–100)_    |
 | `heater_set_temperature` | Set target temperature (°C, 8.0–36.0)       | `temperature` _(float)_   |
-
-**Room Temperature Correction:**  
-Adjust the reported room temperature if the heater’s sensor is inaccurate. This offset is applied in ESPHome and Home Assistant.
-
-**Target Temperature Correction:**  
-Compensate for the heater staying below the set target by increasing or decreasing the internal target temperature.
 
 ## Limitations
 
