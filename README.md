@@ -78,45 +78,18 @@ Use this to increase or decrease the internal target temperature set on the heat
 
 ### Available Scripts
 
-#### `heater_turn_on`
+| Script                   | Description                                 | Parameters                |
+|--------------------------|---------------------------------------------|---------------------------|
+| `heater_turn_on`         | Turn the heater on                          | None                      |
+| `heater_turn_off`        | Turn the heater off                         | None                      |
+| `heater_set_power`       | Set heating power level (0–100%)            | `level` _(int, 0–100)_    |
+| `heater_set_temperature` | Set target temperature (°C, 8.0–36.0)       | `temperature` _(float)_   |
 
-**Description:**
+**Room Temperature Correction:**  
+Adjust the reported room temperature if the heater’s sensor is inaccurate. This offset is applied in ESPHome and Home Assistant.
 
-Turn the heater on
-
-**Invocation:**
-
-No parameters required.
-
-#### `heater_turn_off`
-
-**Description:**
-
-Turns the heater off.
-
-**Invocation:**
-
-No parameters required.
-
-#### `heater_set_power`
-
-**Description:**
-
-Sets the desired heating power level as a percentage (0–100%).
-
-**Parameters:**
-
-- `level` _(int)_: The desired power level of the heater, as a percentage. Value must be between 0 (off) and 100 (full power).
-
-#### `heater_set_temperature`
-
-**Description:**
-
-Sets the desired target temperature in °C as float (8.0 - 36.0).
-
-**Parameters:**
-
-- `temperature` _(float)_: The desired target temperature in °C. Value must be between 8.0 and 36.0.
+**Target Temperature Correction:**  
+Compensate for the heater staying below the set target by increasing or decreasing the internal target temperature.
 
 ## Limitations
 
