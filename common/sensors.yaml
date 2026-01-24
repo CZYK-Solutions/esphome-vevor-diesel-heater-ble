@@ -34,7 +34,7 @@ text_sensor:
 sensor:
   - platform: template
     name: "Heater Burner Error Code"
-    id: heater_burner_error_code
+    id: heater_buner_error_code
     accuracy_decimals: 0
     entity_category: diagnostic
 
@@ -49,7 +49,7 @@ sensor:
 
   - platform: template
     name: "Heater Burner Altitude"
-    id: heater_burner_altitude
+    id: heater_buner_altitude
     unit_of_measurement: "m"
     accuracy_decimals: 0
     device_class: distance

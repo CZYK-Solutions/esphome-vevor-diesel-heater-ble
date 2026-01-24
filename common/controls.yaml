@@ -43,7 +43,7 @@ number:
     step: 1
     unit_of_measurement: "°C"
     icon: "mdi:thermometer-minus"
-    initial_value: 0
+    initial_value: "0"
     optimistic: true
     restore_value: yes
     mode: BOX
@@ -57,7 +57,7 @@ number:
     step: 1
     unit_of_measurement: "°C"
     icon: "mdi:thermometer-plus"
-    initial_value: 1
+    initial_value: "1"
     optimistic: true
     restore_value: yes
     mode: BOX

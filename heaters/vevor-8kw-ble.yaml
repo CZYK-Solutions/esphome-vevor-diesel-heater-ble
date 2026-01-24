@@ -89,7 +89,7 @@ sensor:
           ESP_LOGE("Vevor BLE", "Received state does not match known possible states: %02d", x[5]);
         }
 
-        id(heater_burner_altitude).publish_state(((x[7])<<8)|x[6]);
+        id(heater_buner_altitude).publish_state(((x[7])<<8)|x[6]);
       
         // Set mode string in a separate variable
         const char* mode_str = (x[8] == 2) ? "Temperature" : "Power";
@@ -100,7 +100,7 @@ sensor:
 
         id(heater_target_mode).publish_state(mode_str);
         
-        if (std::strcmp(mode_str, "Temperature") == 0) {
+        if(mode_str == std::string("Temperature")){
           id(heater_control_target_power).publish_state(NAN);
       
           float target_value = x[9];
@@ -139,13 +139,13 @@ sensor:
         }
 
         id(heater_room_temperature).publish_state(room_temperature);
-        id(heater_burner_error_code).publish_state(x[17]);
+        id(heater_buner_error_code).publish_state(x[17]);
       
         if(!id(heater_burner_state).state){
           id(heater_control_target_temperature).publish_state(NAN);
           id(heater_control_target_power).publish_state(NAN);
           
-          id(heater_burner_altitude).publish_state(NAN);
+          id(heater_buner_altitude).publish_state(NAN);
           id(heater_battery_voltage).publish_state(NAN);
           id(heater_target_power).publish_state("unknown");
           id(heater_target_temperature).publish_state(NAN);
@@ -173,8 +173,7 @@ script:
                 service_uuid: ${service_uuid}
                 characteristic_uuid: ${char_fff1_uuid}
                 value: [0xAA, 0x55, 0x0C, 0x22, 0x03, 0x01, 0x00, 0x32]
-            - delay: 200ms
-            - script.execute: request_data
+      - script.execute: request_data
 
   - id: heater_turn_off
     then:
@@ -189,8 +188,7 @@ script:
                 service_uuid: ${service_uuid}
                 characteristic_uuid: ${char_fff1_uuid}
                 value: [0xAA, 0x55, 0x0C, 0x22, 0x03, 0x00, 0x00, 0x31]
-            - delay: 200ms
-            - script.execute: request_data
+      - script.execute: request_data
 
   - id: heater_set_power
     parameters:
@@ -206,13 +204,10 @@ script:
             - script.execute: set_heater_mode_power
             - lambda: |-
                 int level = static_cast<int>(roundf(percentage / 10.0f));
-                if (level < 0) level = 0;
-                if (level > 10) level = 10;
-
                 id(heater_set_target_value).execute(level);
-            - script.execute: request_data
           else:
             - script.execute: heater_turn_off
+      - script.execute: request_data
 
   - id: heater_set_temperature
     parameters:
@@ -247,7 +242,6 @@ script:
           service_uuid: ${service_uuid}
           characteristic_uuid: ${char_fff1_uuid}
           value: [0xAA, 0x55, 0x0C, 0x22, 0x01, 0x00, 0x00, 0x2F]
-      - delay: 200ms
 
   - id: set_heater_mode_temperature
     then:
@@ -262,7 +256,8 @@ script:
                 service_uuid: ${service_uuid}
                 characteristic_uuid: ${char_fff1_uuid}
                 value: [0xAA, 0x55, 0x0C, 0x22, 0x02, 0x02, 0x00, 0x32]
-            - delay: 200ms
+            - delay: 1s
+      - script.execute: request_data
 
   - id: set_heater_mode_power
     then:
@@ -277,7 +272,8 @@ script:
                 service_uuid: ${service_uuid}
                 characteristic_uuid: ${char_fff1_uuid}
                 value: [0xAA, 0x55, 0x0C, 0x22, 0x02, 0x01, 0x00, 0x31]
-            - delay: 200ms
+            - delay: 1s
+      - script.execute: request_data
 
   - id: heater_set_target_value
     parameters:
@@ -301,4 +297,4 @@ script:
               0x00,
               checksum
             };
-      - delay: 200ms
+      - script.execute: request_data
