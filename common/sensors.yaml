@@ -1,0 +1,81 @@
+packages:
+  debug: !include sensors-debug.yaml
+
+binary_sensor:
+  - platform: template
+    name: "Heater State"
+    id: heater_burner_state
+    icon: "mdi:radiator"
+    device_class: running
+
+text_sensor:
+  - platform: template
+    name: "Heater Status"
+    id: heater_burner_status
+    icon: "mdi:induction"
+
+  - platform: template
+    name: "Heater Target Mode"
+    id: heater_target_mode
+    icon: "mdi:radiator"
+    entity_category: diagnostic
+
+  - platform: template
+    name: "Heater Speed"
+    id: heater_speed
+    icon: "mdi:fan"
+
+  - platform: template
+    name: "Heater Target Power"
+    id: heater_target_power
+    icon: "mdi:speedometer"
+    entity_category: diagnostic
+
+sensor:
+  - platform: template
+    name: "Heater Burner Error Code"
+    id: heater_burner_error_code
+    accuracy_decimals: 0
+    entity_category: diagnostic
+
+  - platform: template
+    name: "Heater Battery Voltage"
+    id: heater_battery_voltage
+    unit_of_measurement: "V"
+    accuracy_decimals: 1
+    device_class: voltage
+    icon: "mdi:car-battery"
+    entity_category: diagnostic
+
+  - platform: template
+    name: "Heater Burner Altitude"
+    id: heater_burner_altitude
+    unit_of_measurement: "m"
+    accuracy_decimals: 0
+    device_class: distance
+    icon: "mdi:summit"
+    entity_category: diagnostic
+
+  - platform: template
+    name: "Heater Room Temperature"
+    id: heater_room_temperature
+    unit_of_measurement: "°C"
+    accuracy_decimals: 1
+    icon: "mdi:home-thermometer"
+    entity_category: diagnostic
+
+  - platform: template
+    name: "Heater Burner Temperature"
+    id: heater_burner_temperature
+    unit_of_measurement: "°C"
+    accuracy_decimals: 0
+    icon: "mdi:radiator"
+    entity_category: diagnostic
+
+  - platform: template
+    name: "Heater Target Temperature"
+    id: heater_target_temperature
+    unit_of_measurement: "°C"
+    accuracy_decimals: 0
+    icon: "mdi:temperature-celsius"
+    entity_category: diagnostic

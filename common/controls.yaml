@@ -1,0 +1,100 @@
+switch:
+  - platform: template
+    id: heater_control_state
+    name: "Heater State"
+    icon: "mdi:power"
+    optimistic: true
+    device_class: "outlet"
+    lambda: |-
+      return id(heater_burner_state).state;
+
+    turn_on_action:
+      - script.execute: heater_turn_on
+
+    turn_off_action:
+      - script.execute: heater_turn_off
+
+select:
+  - platform: template
+    name: "Heater Control Mode"
+    id: heater_control_mode
+    optimistic: true
+    options:
+      - "Temperature"
+      - "Power"
+    initial_option: "Temperature"
+    icon: "mdi:radiator"
+    on_value:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(heater_control_mode).current_option() == "Temperature";'
+            then:
+              - script.execute: set_heater_mode_temperature
+            else:
+              - script.execute: set_heater_mode_power
+
+number:
+  - platform: template
+    name: "Heater Room Temperature Correction"
+    id: heater_control_room_temperature_correction
+    min_value: -10
+    max_value: 10
+    step: 1
+    unit_of_measurement: "°C"
+    icon: "mdi:thermometer-minus"
+    initial_value: 0
+    optimistic: true
+    restore_value: yes
+    mode: BOX
+    entity_category: config
+
+  - platform: template
+    name: "Heater Target Temperature Correction"
+    id: heater_control_target_temperature_correction
+    min_value: -5
+    max_value: 5
+    step: 1
+    unit_of_measurement: "°C"
+    icon: "mdi:thermometer-plus"
+    initial_value: 1
+    optimistic: true
+    restore_value: yes
+    mode: BOX
+    entity_category: config
+
+  - platform: template
+    name: "Heater Target Temperature"
+    id: heater_control_target_temperature
+    min_value: 0
+    max_value: 36
+    step: 1
+    unit_of_measurement: "°C"
+    icon: "mdi:thermometer"
+    optimistic: true
+    restore_value: yes
+    device_class: "temperature"
+    mode: BOX
+
+    set_action:
+      then:
+        - script.execute:
+            id: heater_set_temperature
+            temperature: !lambda 'return x;'
+
+  - platform: template
+    name: "Heater Target Power"
+    id: heater_control_target_power
+    min_value: 0
+    max_value: 100
+    step: 1
+    unit_of_measurement: "%"
+    icon: "mdi:speedometer"
+    optimistic: true
+    restore_value: yes
+
+    set_action:
+      then:
+        - script.execute:
+            id: heater_set_power
+            percentage: !lambda 'return x;'

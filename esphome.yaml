@@ -1,9 +1,11 @@
-packages:
-  base: !include heaters/vevor-8kw-ble.yaml
-
 substitutions:
   name: vevor-diesel-heater
   friendly_name: Vevor Diesel Heater
+
+packages:
+  heater: !include heaters/vevor-8kw-ble.yaml
+  sensors: !include common/sensors.yaml
+  controls: !include common/controls.yaml
 
 esphome:
   name: ${name}
@@ -11,7 +13,7 @@ esphome:
   name_add_mac_suffix: false
 
 esp32:
-  board: m5stack-atom
+  board: esp32-s3-devkitc-1
   framework:
     type: esp-idf
 
