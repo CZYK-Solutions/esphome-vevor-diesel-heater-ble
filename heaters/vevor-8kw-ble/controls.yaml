@@ -42,20 +42,6 @@ number:
     mode: BOX
     entity_category: config
 
-  - platform: template
-    name: "Heater Target Temperature Correction"
-    id: heater_control_target_temperature_correction
-    min_value: -5
-    max_value: 5
-    step: 1
-    unit_of_measurement: "°C"
-    icon: "mdi:thermometer-plus"
-    initial_value: 1
-    optimistic: true
-    restore_value: yes
-    mode: BOX
-    entity_category: config
-
   - id: !extend heater_control_target_temperature
     set_action:
       then:
