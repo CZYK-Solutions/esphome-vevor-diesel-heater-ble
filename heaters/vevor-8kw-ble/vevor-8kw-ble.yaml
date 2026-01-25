@@ -160,7 +160,7 @@ sensor:
 
 script:
   # Interface
-  - id: heater_turn_on
+  - id: !extend heater_turn_on
     then:
       - if:
           condition:
@@ -176,7 +176,7 @@ script:
             - delay: 200ms
             - script.execute: request_data
 
-  - id: heater_turn_off
+  - id: !extend heater_turn_off
     then:
       - if:
           condition:
@@ -192,9 +192,7 @@ script:
             - delay: 200ms
             - script.execute: request_data
 
-  - id: heater_set_power
-    parameters:
-      percentage: int
+  - id: !extend heater_set_power
     then:
       - if:
           condition:
@@ -214,9 +212,7 @@ script:
           else:
             - script.execute: heater_turn_off
 
-  - id: heater_set_temperature
-    parameters:
-      temperature: float
+  - id: !extend heater_set_temperature
     then:
       - script.execute: heater_turn_on
       - script.execute: set_heater_mode_temperature

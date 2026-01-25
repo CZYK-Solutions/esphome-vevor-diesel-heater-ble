@@ -4,6 +4,7 @@ substitutions:
   mac_address: "AA:BB:CC:DD:EE:FF"
 
 packages:
+  interface: !include common/interface.yaml
   heater: !include heaters/vevor-8kw-ble/esphome.yaml
 
 esphome:
