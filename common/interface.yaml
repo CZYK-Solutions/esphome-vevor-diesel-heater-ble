@@ -2,23 +2,23 @@ script:
   - id: heater_turn_on
     then:
       - lambda: |-
-          ESP_LOGD("Vevor BLE", "Turning Heater On");
+          ESP_LOGD("Interface", "Turning Heater On");
 
   - id: heater_turn_off
     then:
       - lambda: |-
-          ESP_LOGD("Vevor BLE", "Turning Heater Off");
+          ESP_LOGD("Interface", "Turning Heater Off");
 
   - id: heater_set_power
     parameters:
       percentage: int
     then:
         - lambda: |-
-            ESP_LOGD("Vevor BLE", "Setting Heater Power to %d%%", percentage);
+            ESP_LOGD("Interface", "Setting Heater Power to %d%%", percentage);
 
   - id: heater_set_temperature
     parameters:
       temperature: float
     then:
       - lambda: |-
-          ESP_LOGD("Vevor BLE", "Setting Heater Temperature to %d°C", temperature);
+          ESP_LOGD("Interface", "Setting Heater Temperature to %d°C", temperature);
