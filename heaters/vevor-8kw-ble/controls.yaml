@@ -28,20 +28,6 @@ select:
               - script.execute: set_heater_mode_power
 
 number:
-  - platform: template
-    name: "Heater Room Temperature Correction"
-    id: heater_control_room_temperature_correction
-    min_value: -10
-    max_value: 10
-    step: 1
-    unit_of_measurement: "°C"
-    icon: "mdi:thermometer-minus"
-    initial_value: 0
-    optimistic: true
-    restore_value: yes
-    mode: BOX
-    entity_category: config
-
   - id: !extend heater_control_target_temperature
     set_action:
       then:

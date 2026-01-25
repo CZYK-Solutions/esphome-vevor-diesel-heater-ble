@@ -66,16 +66,10 @@ You may further automate and customize the heater using available scripts accord
 
 ## Controlling the Heater
 
-- **Heater State**: Switch the heater on or off.
+- **Heater Power**: Switch the heater on or off.
 - **Heater Control Mode**: Choose between temperature-based or power-level-based control.
 - **Heater Target Temperature**: Set your desired room temperature.
 - **Heater Target Power**: Set the heater’s output power (0–100%).
-
-- **Heater Room Temperature Correction**:
-Use this to adjust the reported room temperature if the heater’s internal sensor is inaccurate (e.g., always reading too high or too low). This offset is applied to the measured temperature shown in ESPHome and Home Assistant. You can also use this to shift the effective control range (e.g., set +8°C on the heater and -8°C here to achieve a 0–30°C range). The heater’s own display will show its uncorrected value.
-
-- **Heater Target Temperature Correction**:
-Use this to increase or decrease the internal target temperature set on the heater. For example, if the heater consistently stays 1°C below the set target, you can set a +1°C correction here to compensate.
 
 ## Interface
 
