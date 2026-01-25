@@ -1,5 +1,8 @@
 # Vevor Diesel Heater – ESPHome Package
 
+> [!WARNING]
+> Exposed controls, sensors, scripts, etc... might be unstable due to ongoing v0 development . Use at your own risk.
+
 ## Hardware overview
 
 - **Board**: ESP32 with bluetooth (e.g., M5Stack [AtomS3](https://shop.m5stack.com/products/atoms3-lite-esp32s3-dev-kit))
