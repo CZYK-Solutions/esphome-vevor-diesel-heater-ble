@@ -1,16 +1,9 @@
 switch:
-  - platform: template
-    id: heater_control_state
-    name: "Heater State"
-    icon: "mdi:power"
-    optimistic: true
-    device_class: "outlet"
+  - id: !extend heater_power_switch
     lambda: |-
       return id(heater_burner_state).state;
-
     turn_on_action:
       - script.execute: heater_turn_on
-
     turn_off_action:
       - script.execute: heater_turn_off
 
@@ -63,36 +56,14 @@ number:
     mode: BOX
     entity_category: config
 
-  - platform: template
-    name: "Heater Target Temperature"
-    id: heater_control_target_temperature
-    min_value: 0
-    max_value: 36
-    step: 1
-    unit_of_measurement: "°C"
-    icon: "mdi:thermometer"
-    optimistic: true
-    restore_value: yes
-    device_class: "temperature"
-    mode: BOX
-
+  - id: !extend heater_control_target_temperature
     set_action:
       then:
         - script.execute:
             id: heater_set_temperature
             temperature: !lambda 'return x;'
 
-  - platform: template
-    name: "Heater Target Power"
-    id: heater_control_target_power
-    min_value: 0
-    max_value: 100
-    step: 1
-    unit_of_measurement: "%"
-    icon: "mdi:speedometer"
-    optimistic: true
-    restore_value: yes
-
+  - id: !extend heater_control_target_power
     set_action:
       then:
         - script.execute:
