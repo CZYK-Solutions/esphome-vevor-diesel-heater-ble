@@ -105,10 +105,6 @@ sensor:
       
           float target_value = x[9];
       
-          if (id(heater_control_room_temperature_correction).has_state()) {
-            target_value += id(heater_control_room_temperature_correction).state;
-          }
-          
           if (target_value >= 0 && target_value <= 36) {
             id(heater_control_target_temperature).publish_state((float)target_value);
           }
@@ -130,10 +126,6 @@ sensor:
         
         float room_temperature = (int16_t)(((uint8_t)x[16] << 8) | x[15]);
         
-        if (id(heater_control_room_temperature_correction).has_state()) {
-          room_temperature += id(heater_control_room_temperature_correction).state;
-        }
-
         id(heater_room_temperature).publish_state(room_temperature);
         id(heater_burner_error_code).publish_state(x[17]);
       
@@ -217,10 +209,6 @@ script:
           
           ESP_LOGI("Vevor BLE", "Setting Heater Temperature to %d°C", temp_int);
 
-          if (id(heater_control_room_temperature_correction).has_state()) {
-            temp_int -= id(heater_control_room_temperature_correction).state;
-          }
-          
           if (temp_int > 36) temp_int = 36;
           if (temp_int < 8) temp_int = 8;
           
