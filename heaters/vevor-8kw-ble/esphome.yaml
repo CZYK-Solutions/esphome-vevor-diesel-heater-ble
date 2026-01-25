@@ -1,0 +1,4 @@
+packages:
+  heater: !include vevor-8kw-ble.yaml
+  sensors: !include sensors.yaml
+  controls: !include controls.yaml
