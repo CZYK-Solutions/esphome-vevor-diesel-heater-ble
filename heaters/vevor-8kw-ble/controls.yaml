@@ -25,11 +25,12 @@ select:
       then:
         - if:
             condition:
-              lambda: 'return id(heater_control_mode).current_option() == "Temperature";'
+              lambda: 'return id(heater_control_mode).current_option() == "Power";'
             then:
-              - script.execute: set_heater_mode_temperature
-            else:
               - script.execute: set_heater_mode_power
+            else:
+              - script.execute: set_heater_mode_temperature
+
 
 number:
   - id: heater_control_target_temperature
