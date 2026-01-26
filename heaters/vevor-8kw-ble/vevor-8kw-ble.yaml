@@ -25,6 +25,16 @@ interval:
     then:
       - script.execute: request_data
 
+globals:
+  - id: heater_setpoint
+    type: int
+    restore_value: no
+    initial_value: '0'
+  - id: heater_temperature
+    type: int
+    restore_value: no
+    initial_value: '0'
+
 # =========================
 # Sensors
 # =========================
@@ -68,6 +78,9 @@ sensor:
             "Head:%03d|?:%03d|?:%d|?:%d|BT_M:%d|RT_M:%d|?:%d|?:%03d",
             x[0],      x[1],  x[2],x[4],x[14],   x[16], x[18],x[19]
           );
+      
+      
+          id(heater_setpoint) = x[9];
       
           id(heater_debug_bit_1).publish_state(x[1]);
           id(heater_debug_bit_2).publish_state(x[2]);
@@ -196,24 +209,30 @@ script:
                 if (level > 10) level = 10;
 
                 id(heater_set_target_value).execute(level);
-            - script.execute: request_data
+#            - script.execute: request_data
           else:
             - script.execute: heater_turn_off
 
   - id: !extend heater_set_temperature
     then:
-      - script.execute: heater_turn_on
-      - script.execute: set_heater_mode_temperature
-      - lambda: |-
-          int temp_int = static_cast<int>(roundf(temperature));
-          
-          ESP_LOGI("Vevor_8kW_BLE", "Setting Heater Temperature to %d°C", temp_int);
-
-          if (temp_int > 36) temp_int = 36;
-          if (temp_int < 8) temp_int = 8;
-          
-          id(heater_set_target_value).execute(temp_int);
-      - script.execute: request_data
+      if:
+        condition:
+          - lambda: |-
+              return roundf(temperature) != id(heater_temperature);
+        then:
+        - script.execute: heater_turn_on
+        - script.execute: set_heater_mode_temperature
+        - lambda: |-
+            int temp_int = static_cast<int>(roundf(temperature));
+            id(heater_temperature) = temp_int;
+            
+            ESP_LOGI("Vevor_8kW_BLE", "Setting Heater Temperature to %d°C", temp_int);
+  
+            if (temp_int > 36) temp_int = 36;
+            if (temp_int < 8) temp_int = 8;
+            
+            id(heater_set_target_value).execute(temp_int);
+#        - script.execute: request_data
 
   #  Heater Specific
   - id: request_data
@@ -259,22 +278,28 @@ script:
     parameters:
       x: int
     then:
-      - lambda: |-
-          ESP_LOGI("Vevor_8kW_BLE", "Setting Heater Setpoint to %d", x);
-      - ble_client.ble_write:
-          id: heater_ble
-          service_uuid: ${service_uuid}
-          characteristic_uuid: ${char_fff1_uuid}
-          value: !lambda |-
-            uint8_t y = (uint8_t) x;
-            uint8_t checksum =
-              ((0xAA + 0x55 + 0x0C + 0x22 + 0x04 + y + 0x00) + 1) % 256;
+      if:
+        condition:
+          - lambda: |-
+              return x != id(heater_setpoint);
+        then:
+          - lambda: |-
+              ESP_LOGI("Vevor_8kW_BLE", "Setting Heater Setpoint to %d", x);
+          - ble_client.ble_write:
+              id: heater_ble
+              service_uuid: ${service_uuid}
+              characteristic_uuid: ${char_fff1_uuid}
+              value: !lambda |-
+                uint8_t y = (uint8_t) x;
+                uint8_t checksum =
+                  ((0xAA + 0x55 + 0x0C + 0x22 + 0x04 + y + 0x00) + 1) % 256;
+                
+                return std::vector<uint8_t>{
+                  0xAA, 0x55, 0x0C, 0x22,
+                  0x04,
+                  y,
+                  0x00,
+                  checksum
+                };
+          - delay: 200ms
 
-            return std::vector<uint8_t>{
-              0xAA, 0x55, 0x0C, 0x22,
-              0x04,
-              y,
-              0x00,
-              checksum
-            };
-      - delay: 200ms
