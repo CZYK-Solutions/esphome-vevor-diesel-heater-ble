@@ -123,14 +123,14 @@ sensor:
           }
 
           id(heater_target_temperature).publish_state((int)target_value);
-          id(heater_target_power).publish_state("unknown");
+          id(heater_target_power).publish_state(NAN);
         } 
         else{
           id(heater_control_target_temperature).publish_state(NAN);
           id(heater_control_target_power).publish_state((float)x[9] * 10);
       
           id(heater_target_temperature).publish_state(NAN);
-          id(heater_target_power).publish_state(std::to_string(x[9] * 10));
+          id(heater_target_power).publish_state(x[9] * 10);
         }
       
         id(heater_speed).publish_state(std::to_string((int)x[10] + 1));
@@ -148,13 +148,13 @@ sensor:
           
           id(heater_burner_altitude).publish_state(NAN);
           id(heater_battery_voltage).publish_state(NAN);
-          id(heater_target_power).publish_state("unknown");
+          id(heater_target_power).publish_state(NAN);
           id(heater_target_temperature).publish_state(NAN);
         }
       
         if ("Idle" == id(heater_burner_status).state) {
           id(heater_speed).publish_state("0");
-          id(heater_target_power).publish_state("0");
+          id(heater_target_power).publish_state(0);
         }
       }
       return 0;

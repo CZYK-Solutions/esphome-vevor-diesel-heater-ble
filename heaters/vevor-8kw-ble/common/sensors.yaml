@@ -26,18 +26,19 @@ text_sensor:
     icon: "mdi:fan"
 
   - platform: template
-    name: "Heater Target Power"
-    id: heater_target_power
-    icon: "mdi:speedometer"
-    entity_category: diagnostic
-
-  - platform: template
     name: "Heater Burner Error Code"
     id: heater_burner_error_code
     icon: "mdi:alert"
     entity_category: diagnostic
 
 sensor:
+  - platform: template
+    name: "Heater Target Power"
+    id: heater_target_power
+    unit_of_measurement: "%"
+    accuracy_decimals: 0
+    icon: "mdi:speedometer"
+    entity_category: diagnostic
 
   - platform: template
     name: "Heater Battery Voltage"
