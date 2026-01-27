@@ -284,7 +284,7 @@ script:
               return x != id(heater_setpoint);
         then:
           - lambda: |-
-              ESP_LOGI("Vevor_8kW_BLE", "Setting Heater Setpoint to %d", x);
+              ESP_LOGI("Vevor_8kW_BLE", "Setting Heater Setpoint to %d%", x);
           - ble_client.ble_write:
               id: heater_ble
               service_uuid: ${service_uuid}
