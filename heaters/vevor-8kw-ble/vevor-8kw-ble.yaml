@@ -200,7 +200,7 @@ script:
       - if:
           condition:
             lambda: |-
-              return percentage > 0 and percentage != id(heater_target_power).state;
+              return percentage > 0;
           then:
             - lambda: |-
                 ESP_LOGI("Vevor_8kW_BLE", "Setting Heater Power to %d%%", percentage);
