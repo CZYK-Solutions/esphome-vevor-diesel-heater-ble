@@ -165,7 +165,8 @@ script:
     then:
       - if:
           condition:
-            lambda: 'return !id(heater_burner_state).state;'
+            lambda: |-
+              return !id(heater_burner_state).state;
           then:
             - lambda: |-
                 ESP_LOGI("Vevor_8kW_BLE", "Turning Heater On");
@@ -181,7 +182,8 @@ script:
     then:
       - if:
           condition:
-            lambda: 'return id(heater_burner_state).state;'
+            lambda: |-
+              return id(heater_burner_state).state;
           then:
             - lambda: |-
                 ESP_LOGI("Vevor_8kW_BLE", "Turning Heater Off");
@@ -197,7 +199,8 @@ script:
     then:
       - if:
           condition:
-            lambda: 'return percentage > 0;'
+            lambda: |-
+              return percentage > 0 and percentage != id(heater_target_power).state;
           then:
             - lambda: |-
                 ESP_LOGI("Vevor_8kW_BLE", "Setting Heater Power to %d%%", percentage);
