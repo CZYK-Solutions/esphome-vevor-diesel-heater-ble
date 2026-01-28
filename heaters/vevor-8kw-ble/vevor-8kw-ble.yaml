@@ -203,7 +203,9 @@ script:
               return percentage > 0;
           then:
             - lambda: |-
-                ESP_LOGI("Vevor_8kW_BLE", "Setting Heater Power to %d%%", percentage);
+                if(percentage != id(heater_target_power).state){
+                  ESP_LOGI("Vevor_8kW_BLE", "Setting Heater Power to %d%%", percentage);
+                }
             - script.execute: heater_turn_on
             - script.execute: set_heater_mode_power
             - lambda: |-
@@ -212,7 +214,6 @@ script:
                 if (level > 10) level = 10;
 
                 id(heater_set_target_value).execute(level);
-#            - script.execute: request_data
           else:
             - script.execute: heater_turn_off
 
@@ -235,7 +236,6 @@ script:
             if (temp_int < 8) temp_int = 8;
             
             id(heater_set_target_value).execute(temp_int);
-#        - script.execute: request_data
 
   #  Heater Specific
   - id: request_data
