@@ -79,7 +79,7 @@ You may further automate and customize the heater using available scripts accord
 |--------------------------|---------------------------------------------|---------------------------|
 | `heater_turn_on`         | Turn the heater on                          | None                      |
 | `heater_turn_off`        | Turn the heater off                         | None                      |
-| `heater_set_power`       | Set heating power level (0–100%)            | `level` _(int, 0–100)_    |
+| `heater_set_power`       | Set heating power level (0–100%)            | `percentage` _(int, 0–100)_ |
 | `heater_set_temperature` | Set target temperature (°C, 8.0–36.0)       | `temperature` _(float)_   |
 
 ## Limitations
