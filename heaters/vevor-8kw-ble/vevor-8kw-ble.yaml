@@ -26,11 +26,15 @@ interval:
       - script.execute: request_data
 
 globals:
-  - id: heater_setpoint
+  - id: heater_power
     type: int
     restore_value: no
     initial_value: '0'
   - id: heater_temperature
+    type: int
+    restore_value: no
+    initial_value: '0'
+  - id: heater_setpoint
     type: int
     restore_value: no
     initial_value: '0'
@@ -165,7 +169,8 @@ script:
     then:
       - if:
           condition:
-            lambda: 'return !id(heater_burner_state).state;'
+            lambda: |-
+              return !id(heater_burner_state).state;
           then:
             - lambda: |-
                 ESP_LOGI("Vevor_8kW_BLE", "Turning Heater On");
@@ -181,7 +186,8 @@ script:
     then:
       - if:
           condition:
-            lambda: 'return id(heater_burner_state).state;'
+            lambda: |-
+              return id(heater_burner_state).state;
           then:
             - lambda: |-
                 ESP_LOGI("Vevor_8kW_BLE", "Turning Heater Off");
@@ -197,19 +203,23 @@ script:
     then:
       - if:
           condition:
-            lambda: 'return percentage > 0;'
+            lambda: |-
+              return percentage > 0 and percentage != id(heater_power);
           then:
             - lambda: |-
-                ESP_LOGI("Vevor_8kW_BLE", "Setting Heater Power to %d%%", percentage);
+                if(percentage != id(heater_target_power).state){
+                  ESP_LOGI("Vevor_8kW_BLE", "Setting Heater Power to %d%%", percentage);
+                }
             - script.execute: heater_turn_on
             - script.execute: set_heater_mode_power
             - lambda: |-
+                id(heater_power) = percentage;
+
                 int level = static_cast<int>(roundf(percentage / 10.0f));
                 if (level < 0) level = 0;
                 if (level > 10) level = 10;
 
                 id(heater_set_target_value).execute(level);
-#            - script.execute: request_data
           else:
             - script.execute: heater_turn_off
 
@@ -232,7 +242,6 @@ script:
             if (temp_int < 8) temp_int = 8;
             
             id(heater_set_target_value).execute(temp_int);
-#        - script.execute: request_data
 
   #  Heater Specific
   - id: request_data
@@ -284,7 +293,7 @@ script:
               return x != id(heater_setpoint);
         then:
           - lambda: |-
-              ESP_LOGI("Vevor_8kW_BLE", "Setting Heater Setpoint to %d", x);
+              ESP_LOGI("Vevor_8kW_BLE", "Setting Heater Setpoint to %d%", x);
           - ble_client.ble_write:
               id: heater_ble
               service_uuid: ${service_uuid}
