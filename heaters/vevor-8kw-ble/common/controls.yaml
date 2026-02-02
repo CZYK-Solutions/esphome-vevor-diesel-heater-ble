@@ -1,0 +1,68 @@
+switch:
+  - id: heater_power_switch
+    platform: template
+    name: "Heater Power"
+    icon: "mdi:power"
+    optimistic: true
+    lambda: |-
+      return id(heater_burner_state).state;
+    turn_on_action:
+      - script.execute: heater_turn_on
+    turn_off_action:
+      - script.execute: heater_turn_off
+
+select:
+  - id: heater_control_mode
+    platform: template
+    name: "Heater Control Mode"
+    optimistic: true
+    options:
+      - "Temperature"
+      - "Power"
+    initial_option: "Temperature"
+    icon: "mdi:radiator"
+    on_value:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(heater_control_mode).current_option() == "Power";'
+            then:
+              - script.execute: set_heater_mode_power
+            else:
+              - script.execute: set_heater_mode_temperature
+
+
+number:
+  - id: heater_control_target_temperature
+    platform: template
+    name: "Heater Target Temperature"
+    unit_of_measurement: "°C"
+    icon: "mdi:thermometer"
+    min_value: 0
+    max_value: 36
+    step: 1
+    optimistic: true
+    restore_value: yes
+    device_class: "temperature"
+    mode: BOX
+    set_action:
+      then:
+        - script.execute:
+            id: heater_set_temperature
+            temperature: !lambda 'return x;'
+
+  - id: heater_control_target_power
+    platform: template
+    name: "Heater Target Power"
+    unit_of_measurement: "%"
+    icon: "mdi:speedometer"
+    min_value: 0
+    max_value: 100
+    step: 1
+    optimistic: true
+    restore_value: yes
+    set_action:
+      then:
+        - script.execute:
+            id: heater_set_power
+            percentage: !lambda 'return x;'

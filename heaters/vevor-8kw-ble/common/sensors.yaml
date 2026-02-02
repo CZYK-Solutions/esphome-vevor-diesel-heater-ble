@@ -26,16 +26,18 @@ text_sensor:
     icon: "mdi:fan"
 
   - platform: template
-    name: "Heater Target Power"
-    id: heater_target_power
-    icon: "mdi:speedometer"
+    name: "Heater Burner Error Code"
+    id: heater_burner_error_code
+    icon: "mdi:alert"
     entity_category: diagnostic
 
 sensor:
   - platform: template
-    name: "Heater Burner Error Code"
-    id: heater_burner_error_code
+    name: "Heater Target Power"
+    id: heater_target_power
+    unit_of_measurement: "%"
     accuracy_decimals: 0
+    icon: "mdi:speedometer"
     entity_category: diagnostic
 
   - platform: template
@@ -56,25 +58,28 @@ sensor:
     icon: "mdi:summit"
     entity_category: diagnostic
 
-  - platform: template
+  - id: heater_room_temperature
     name: "Heater Room Temperature"
-    id: heater_room_temperature
+    platform: template
+    device_class: temperature
     unit_of_measurement: "°C"
     accuracy_decimals: 1
     icon: "mdi:home-thermometer"
     entity_category: diagnostic
 
-  - platform: template
+  - id: heater_burner_temperature
     name: "Heater Burner Temperature"
-    id: heater_burner_temperature
+    platform: template
+    device_class: temperature
     unit_of_measurement: "°C"
     accuracy_decimals: 0
     icon: "mdi:radiator"
     entity_category: diagnostic
 
-  - platform: template
+  - id: heater_target_temperature
     name: "Heater Target Temperature"
-    id: heater_target_temperature
+    platform: template
+    device_class: temperature
     unit_of_measurement: "°C"
     accuracy_decimals: 0
     icon: "mdi:temperature-celsius"

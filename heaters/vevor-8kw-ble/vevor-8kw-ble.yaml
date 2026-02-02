@@ -21,9 +21,23 @@ ble_client:
         - logger.log: "🔗 Disconnected from heater"
 
 interval:
-  - interval: 15s
+  - interval: 5s
     then:
       - script.execute: request_data
+
+globals:
+  - id: heater_power
+    type: int
+    restore_value: no
+    initial_value: '0'
+  - id: heater_temperature
+    type: int
+    restore_value: no
+    initial_value: '0'
+  - id: heater_setpoint
+    type: int
+    restore_value: no
+    initial_value: '0'
 
 # =========================
 # Sensors
@@ -43,8 +57,8 @@ sensor:
       snprintf(
         compareline,
         sizeof(compareline),
-        "%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d",
-        x[1],x[2],x[3],x[4],x[5],x[8],x[9],x[10],x[14],x[15],x[16],x[17],x[18]
+        "%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d",
+        x[1],x[2],x[3],x[4],x[5],x[8],x[9],x[10],x[14],x[16],x[17],x[18]
       );
 
       static std::string prev_compare;
@@ -58,16 +72,19 @@ sensor:
 
         if (current_compare != prev_compare) {
           ESP_LOGI(
-            "Vevor BLE", 
-            "Power: %d | Status: %d | Mode: %d | SP: %03d | Speed: %02d | BT: %03d | RT: %02d | Err: %02d",
-            x[3],        x[5],        x[8],      x[9],      x[10],        x[13],     x[15],     x[17]
+            "Vevor_8kW_BLE", 
+            "Power: %d | Status: %d | Mode: %d | SP: %3d | Speed: %2d | BT: %3d | RT: %2d | Err: %2d",
+            x[3],        x[5],        x[8],      x[9],     x[10],       x[13],    x[15],    x[17]
           );
       
           ESP_LOGD(
-            "Vevor BLE", 
+            "Vevor_8kW_BLE", 
             "Head:%03d|?:%03d|?:%d|?:%d|BT_M:%d|RT_M:%d|?:%d|?:%03d",
             x[0],      x[1],  x[2],x[4],x[14],   x[16], x[18],x[19]
           );
+      
+      
+          id(heater_setpoint) = x[9];
       
           id(heater_debug_bit_1).publish_state(x[1]);
           id(heater_debug_bit_2).publish_state(x[2]);
@@ -86,7 +103,7 @@ sensor:
         if (x[5] < sizeof(states)/sizeof(states[0])) {
           id(heater_burner_status).publish_state(states[x[5]]);
         } else {
-          ESP_LOGE("Vevor BLE", "Received state does not match known possible states: %02d", x[5]);
+          ESP_LOGE("Vevor_8kW_BLE", "Received state does not match known possible states: %02d", x[5]);
         }
 
         id(heater_burner_altitude).publish_state(((x[7])<<8)|x[6]);
@@ -105,27 +122,19 @@ sensor:
       
           float target_value = x[9];
       
-          if (id(heater_control_room_temperature_correction).has_state()) {
-            target_value += id(heater_control_room_temperature_correction).state;
-          }
-      
-          if (id(heater_control_target_temperature_correction).has_state()) {
-            target_value -= id(heater_control_target_temperature_correction).state;
-          }
-          
           if (target_value >= 0 && target_value <= 36) {
             id(heater_control_target_temperature).publish_state((float)target_value);
           }
 
           id(heater_target_temperature).publish_state((int)target_value);
-          id(heater_target_power).publish_state("unknown");
+          id(heater_target_power).publish_state(NAN);
         } 
         else{
           id(heater_control_target_temperature).publish_state(NAN);
           id(heater_control_target_power).publish_state((float)x[9] * 10);
       
           id(heater_target_temperature).publish_state(NAN);
-          id(heater_target_power).publish_state(std::to_string(x[9] * 10));
+          id(heater_target_power).publish_state(x[9] * 10);
         }
       
         id(heater_speed).publish_state(std::to_string((int)x[10] + 1));
@@ -134,12 +143,8 @@ sensor:
         
         float room_temperature = (int16_t)(((uint8_t)x[16] << 8) | x[15]);
         
-        if (id(heater_control_room_temperature_correction).has_state()) {
-          room_temperature += id(heater_control_room_temperature_correction).state;
-        }
-
         id(heater_room_temperature).publish_state(room_temperature);
-        id(heater_burner_error_code).publish_state(x[17]);
+        id(heater_burner_error_code).publish_state(std::to_string(x[17]));
       
         if(!id(heater_burner_state).state){
           id(heater_control_target_temperature).publish_state(NAN);
@@ -147,27 +152,28 @@ sensor:
           
           id(heater_burner_altitude).publish_state(NAN);
           id(heater_battery_voltage).publish_state(NAN);
-          id(heater_target_power).publish_state("unknown");
+          id(heater_target_power).publish_state(NAN);
           id(heater_target_temperature).publish_state(NAN);
         }
       
         if ("Idle" == id(heater_burner_status).state) {
           id(heater_speed).publish_state("0");
-          id(heater_target_power).publish_state("0");
+          id(heater_target_power).publish_state(0);
         }
       }
       return 0;
 
 script:
   # Interface
-  - id: heater_turn_on
+  - id: !extend heater_turn_on
     then:
       - if:
           condition:
-            lambda: 'return !id(heater_burner_state).state;'
+            lambda: |-
+              return !id(heater_burner_state).state;
           then:
             - lambda: |-
-                ESP_LOGI("Vevor BLE", "Turning Heater On");
+                ESP_LOGI("Vevor_8kW_BLE", "Turning Heater On");
             - ble_client.ble_write:
                 id: heater_ble
                 service_uuid: ${service_uuid}
@@ -176,14 +182,15 @@ script:
             - delay: 200ms
             - script.execute: request_data
 
-  - id: heater_turn_off
+  - id: !extend heater_turn_off
     then:
       - if:
           condition:
-            lambda: 'return id(heater_burner_state).state;'
+            lambda: |-
+              return id(heater_burner_state).state;
           then:
             - lambda: |-
-                ESP_LOGI("Vevor BLE", "Turning Heater Off");
+                ESP_LOGI("Vevor_8kW_BLE", "Turning Heater Off");
             - ble_client.ble_write:
                 id: heater_ble
                 service_uuid: ${service_uuid}
@@ -192,52 +199,49 @@ script:
             - delay: 200ms
             - script.execute: request_data
 
-  - id: heater_set_power
-    parameters:
-      percentage: int
+  - id: !extend heater_set_power
     then:
       - if:
           condition:
-            lambda: 'return percentage > 0;'
+            lambda: |-
+              return percentage > 0;
           then:
             - lambda: |-
-                ESP_LOGI("Vevor BLE", "Setting Heater Power to %d%%", percentage);
+                if(percentage != id(heater_power)){
+                  ESP_LOGI("Vevor_8kW_BLE", "Setting Heater Power to %d%%", percentage);
+                }
             - script.execute: heater_turn_on
             - script.execute: set_heater_mode_power
             - lambda: |-
+                id(heater_power) = percentage;
+
                 int level = static_cast<int>(roundf(percentage / 10.0f));
                 if (level < 0) level = 0;
                 if (level > 10) level = 10;
 
                 id(heater_set_target_value).execute(level);
-            - script.execute: request_data
           else:
             - script.execute: heater_turn_off
 
-  - id: heater_set_temperature
-    parameters:
-      temperature: float
+  - id: !extend heater_set_temperature
     then:
-      - script.execute: heater_turn_on
-      - script.execute: set_heater_mode_temperature
-      - lambda: |-
-          int temp_int = static_cast<int>(roundf(temperature));
-          
-          ESP_LOGI("Vevor BLE", "Setting Heater Temperature to %d°C", temp_int);
-
-          if (id(heater_control_room_temperature_correction).has_state()) {
-            temp_int -= id(heater_control_room_temperature_correction).state;
-          }
-          
-          if (id(heater_control_target_temperature_correction).has_state()) {
-            temp_int += id(heater_control_target_temperature_correction).state;
-          }
-          
-          if (temp_int > 36) temp_int = 36;
-          if (temp_int < 8) temp_int = 8;
-          
-          id(heater_set_target_value).execute(temp_int);
-      - script.execute: request_data
+      - if:
+          condition:
+            - lambda: |-
+                return roundf(temperature) != id(heater_temperature);
+          then:
+          - script.execute: heater_turn_on
+          - script.execute: set_heater_mode_temperature
+          - lambda: |-
+              int temp_int = static_cast<int>(roundf(temperature));
+              id(heater_temperature) = temp_int;
+              
+              ESP_LOGI("Vevor_8kW_BLE", "Setting Heater Temperature to %d°C", temp_int);
+    
+              if (temp_int > 36) temp_int = 36;
+              if (temp_int < 8) temp_int = 8;
+              
+              id(heater_set_target_value).execute(temp_int);
 
   #  Heater Specific
   - id: request_data
@@ -256,7 +260,7 @@ script:
             lambda: 'return id(heater_target_mode).state != "Temperature";'
           then:
             - lambda: |-
-                ESP_LOGI("Vevor BLE", "Setting Heater Target Mode to Temperature");
+                ESP_LOGI("Vevor_8kW_BLE", "Setting Heater Target Mode to Temperature");
             - ble_client.ble_write:
                 id: heater_ble
                 service_uuid: ${service_uuid}
@@ -271,7 +275,7 @@ script:
             lambda: 'return id(heater_target_mode).state != "Power";'
           then:
             - lambda: |-
-                ESP_LOGI("Vevor BLE", "Setting Heater Target Mode to Power");
+                ESP_LOGI("Vevor_8kW_BLE", "Setting Heater Target Mode to Power");
             - ble_client.ble_write:
                 id: heater_ble
                 service_uuid: ${service_uuid}
@@ -283,22 +287,28 @@ script:
     parameters:
       x: int
     then:
-      - lambda: |-
-          ESP_LOGI("Vevor BLE", "Setting Heater Setpoint to %d", x);
-      - ble_client.ble_write:
-          id: heater_ble
-          service_uuid: ${service_uuid}
-          characteristic_uuid: ${char_fff1_uuid}
-          value: !lambda |-
-            uint8_t y = (uint8_t) x;
-            uint8_t checksum =
-              ((0xAA + 0x55 + 0x0C + 0x22 + 0x04 + y + 0x00) + 1) % 256;
+      - if:
+          condition:
+            - lambda: |-
+                return x != id(heater_setpoint);
+          then:
+            - lambda: |-
+                ESP_LOGI("Vevor_8kW_BLE", "Setting Heater Setpoint to %d%", x);
+            - ble_client.ble_write:
+                id: heater_ble
+                service_uuid: ${service_uuid}
+                characteristic_uuid: ${char_fff1_uuid}
+                value: !lambda |-
+                  uint8_t y = (uint8_t) x;
+                  uint8_t checksum =
+                    ((0xAA + 0x55 + 0x0C + 0x22 + 0x04 + y + 0x00) + 1) % 256;
+                  
+                  return std::vector<uint8_t>{
+                    0xAA, 0x55, 0x0C, 0x22,
+                    0x04,
+                    y,
+                    0x00,
+                    checksum
+                  };
+            - delay: 200ms
 
-            return std::vector<uint8_t>{
-              0xAA, 0x55, 0x0C, 0x22,
-              0x04,
-              y,
-              0x00,
-              checksum
-            };
-      - delay: 200ms
