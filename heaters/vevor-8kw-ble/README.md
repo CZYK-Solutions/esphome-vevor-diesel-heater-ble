@@ -17,4 +17,4 @@ This project integrates the Vevor 8kW diesel heater (BLE version) with ESPHome, 
 - **Sensor Resolution:**  
   The internal sensor reports in 1°C steps.
 - **Error Handling:**  
-  The heater does not appear to have robust long-term error compensation when current temperature stays below target vor a long time.
+  The heater does not appear to have robust long-term error compensation when current temperature stays below target for a long time.
