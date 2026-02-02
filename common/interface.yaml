@@ -21,4 +21,4 @@ script:
       temperature: float
     then:
       - lambda: |-
-          ESP_LOGD("Interface", "Setting Heater Temperature to %d°C", temperature);
+          ESP_LOGD("Interface", "Setting Heater Temperature to %.1f°C", temperature);
