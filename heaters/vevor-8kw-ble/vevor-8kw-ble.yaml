@@ -21,7 +21,7 @@ ble_client:
         - logger.log: "🔗 Disconnected from heater"
 
 interval:
-  - interval: 15s
+  - interval: 5s
     then:
       - script.execute: request_data
 
@@ -204,10 +204,10 @@ script:
       - if:
           condition:
             lambda: |-
-              return percentage > 0 and percentage != id(heater_power);
+              return percentage > 0;
           then:
             - lambda: |-
-                if(percentage != id(heater_target_power).state){
+                if(percentage != id(heater_power)){
                   ESP_LOGI("Vevor_8kW_BLE", "Setting Heater Power to %d%%", percentage);
                 }
             - script.execute: heater_turn_on
