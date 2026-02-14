@@ -129,7 +129,7 @@ sensor:
           id(heater_target_temperature).publish_state((int)target_value);
           id(heater_target_power).publish_state(NAN);
         } 
-        else{
+        else {
           id(heater_control_target_temperature).publish_state(NAN);
           id(heater_control_target_power).publish_state((float)x[9] * 10);
       
@@ -156,11 +156,15 @@ sensor:
           id(heater_target_temperature).publish_state(NAN);
         }
       
-        if ("Ignition" == id(heater_burner_status).state) {
+        std::string status = id(heater_burner_status).state;
+      
+        if ("Ignition" == status) {
           id(heater_speed).publish_state("10");
         }
-      
-        if ("Idle" == id(heater_burner_status).state) {
+        else if ("Shutting down" == status) {
+          id(heater_speed).publish_state("0");
+        }
+        else if ("Idle" == status) {
           id(heater_speed).publish_state("0");
           id(heater_target_power).publish_state(0);
         }
