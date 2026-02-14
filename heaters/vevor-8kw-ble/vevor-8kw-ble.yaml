@@ -156,6 +156,10 @@ sensor:
           id(heater_target_temperature).publish_state(NAN);
         }
       
+        if ("Ignition" == id(heater_burner_status).state) {
+          id(heater_speed).publish_state("10");
+        }
+      
         if ("Idle" == id(heater_burner_status).state) {
           id(heater_speed).publish_state("0");
           id(heater_target_power).publish_state(0);
