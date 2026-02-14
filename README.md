@@ -22,27 +22,15 @@ Your device config can simply include the package from this repository.
 See the example below for the required `packages` and `substitutions` keys.
 
 ```yaml
-packages:
-  base:
-    url: https://github.com/CZYK-Solutions/esphome-vevor-diesel-heater-ble
-    files: [esphome.yaml]
-
 substitutions:
-  name: diesel-heater
-  friendly_name: Diesel Heater
-  
   # The Mac address of your heater's BLE module (use nRF Connect app to find it)
   mac_address: "AA:BB:CC:DD:EE:FF"
 
-# Sections below are your own configuration
-logger:
-api:
-ota:
-wifi:
-captive_portal:
+packages:
+  base: github.com/CZYK-Solutions/esphome-vevor-diesel-heater-ble/esphome.yaml
 ```
 
-Flash the device once, then use OTA for future updates. It should connect to your heater and start reporting in Home Assistant automatically
+Flash the device. It should connect to your heater and start reporting in Home Assistant automatically
 
 ## What the package includes
 
