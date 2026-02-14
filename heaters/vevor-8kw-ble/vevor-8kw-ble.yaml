@@ -71,7 +71,7 @@ sensor:
       if (x[0] == 170) {
 
         if (current_compare != prev_compare) {
-          ESP_LOGI(
+          ESP_LOGD(
             "Vevor_8kW_BLE", 
             "Power: %d | Status: %d | Mode: %d | SP: %3d | Speed: %2d | BT: %3d | RT: %2d | Err: %2d",
             x[3],        x[5],        x[8],      x[9],     x[10],       x[13],    x[15],    x[17]
