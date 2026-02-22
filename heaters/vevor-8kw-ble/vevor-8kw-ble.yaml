@@ -158,10 +158,7 @@ sensor:
       
         std::string status = id(heater_burner_status).state;
       
-        if ("Ignition" == status) {
-          id(heater_speed).publish_state("10");
-        }
-        else if ("Shutting down" == status) {
+        if ("Shutting down" == status) {
           id(heater_speed).publish_state("0");
         }
         else if ("Idle" == status) {
