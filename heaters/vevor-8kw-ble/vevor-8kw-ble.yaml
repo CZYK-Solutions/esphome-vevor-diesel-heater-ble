@@ -165,6 +165,9 @@ sensor:
           id(heater_speed).publish_state("0");
           id(heater_target_power).publish_state(0);
         }
+        else if ("Self test running" == status) {
+          id(heater_speed).publish_state("0");
+        }
       }
       return 0;
 
