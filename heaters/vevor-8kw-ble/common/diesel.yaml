@@ -1,0 +1,68 @@
+substitutions:
+  diesel_ml_per_pulse: "0.022"
+  diesel_flow_correction: "1.0"
+
+sensor:
+  - id: heater_diesel_flow_rate
+    name: "Heater Diesel Flow Rate"
+    platform: template
+    unit_of_measurement: "L/h"
+    accuracy_decimals: 3
+    icon: "mdi:pipe-valve"
+    internal: true
+    lambda: |-
+      std::string status = id(heater_burner_status).state;
+
+      if (id(heater_burner_error_code).state != "0") {
+        return 0.0f;
+      }
+
+      if (status != "Ignition" && status != "Heating") {
+        return 0.0f;
+      }
+
+      std::string speed = id(heater_speed).state;
+      if (speed.empty() || !isdigit(speed[0])) {
+        return 0.0f;
+      }
+
+      if (status == "Ignition") {
+        speed = "10";
+      }
+
+      float ml_per_pulse = ${diesel_ml_per_pulse};
+      float correction = ${diesel_flow_correction};
+      float pulse_per_second = 0.0f;
+
+      switch (std::stoi(speed)) {
+        case 1: pulse_per_second = 122.0f / 60.0f; break;
+        case 2: pulse_per_second = 2.288f; break;
+        case 3: pulse_per_second = 2.544f; break;
+        case 4: pulse_per_second = 2.800f; break;
+        case 5: pulse_per_second = 3.056f; break;
+        case 6: pulse_per_second = 3.311f; break;
+        case 7: pulse_per_second = 3.567f; break;
+        case 8: pulse_per_second = 3.822f; break;
+        case 9: pulse_per_second = 4.078f; break;
+        case 10: pulse_per_second = 276.0f / 60.0f; break;
+        default: pulse_per_second = 0.0f; break;
+      }
+
+      float ml_per_s = pulse_per_second * ml_per_pulse * correction;
+      float l_per_h = ml_per_s * 3600.0f / 1000.0f;
+
+      return l_per_h;
+
+  - id: heater_diesel_consumption
+    name: "Diesel Consumption"
+    platform: integration
+    unit_of_measurement: "L"
+    accuracy_decimals: 2
+    icon: "mdi:fuel"
+    device_class: "gas"
+    state_class: "total_increasing"
+    restore: true
+    sensor: heater_diesel_flow_rate
+    time_unit: h
+    integration_method: left
+    internal: true

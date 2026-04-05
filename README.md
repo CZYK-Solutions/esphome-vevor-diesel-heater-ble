@@ -32,10 +32,31 @@ packages:
 
 Flash the device. It should connect to your heater and start reporting in Home Assistant automatically
 
+### Diesel flow and consumption sensors (Vevor 8kW)
+
+For the Vevor 8kW heater profile, estimated diesel flow and total consumption are included by default as a bonus.
+
 ## What the package includes
 
 The package defined in `esphome.yaml` sets several Controls, Sensors and Diagnostics entities to monitor and control the 
 heater via BLE:
+
+It also includes diesel-related sensors for estimated flow rate and cumulative consumption.
+
+### Sensors
+
+- `Heater Room Temperature`
+- `Heater Burner Temperature`
+- `Heater Target Temperature`
+- `Heater Target Power`
+- `Heater Battery Voltage`
+- `Heater Burner Altitude`
+- `Heater Speed`
+- `Heater Burner Error Code`
+- `Heater Diesel Flow Rate`
+- `Diesel Consumption`
+
+Additional debug BIT sensors are available and disabled by default.
 
 <table>
   <tr>
@@ -59,9 +80,7 @@ You may further automate and customize the heater using available scripts accord
 - **Heater Target Temperature**: Set your desired room temperature.
 - **Heater Target Power**: Set the heater’s output power (0–100%).
 
-## Interface
-
-### Available Scripts
+## Available Scripts
 
 | Script                   | Description                                 | Parameters                |
 |--------------------------|---------------------------------------------|---------------------------|
@@ -69,6 +88,7 @@ You may further automate and customize the heater using available scripts accord
 | `heater_turn_off`        | Turn the heater off                         | None                      |
 | `heater_set_power`       | Set heating power level (0–100%)            | `percentage` _(int, 0–100)_ |
 | `heater_set_temperature` | Set target temperature (°C, 8.0–36.0)       | `temperature` _(float)_   |
+
 
 ## Limitations
 
