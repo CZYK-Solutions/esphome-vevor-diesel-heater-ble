@@ -71,7 +71,7 @@ sensor:
       if (x[0] == 170) {
 
         if (current_compare != prev_compare) {
-          ESP_LOGI(
+          ESP_LOGD(
             "Vevor_8kW_BLE", 
             "Power: %d | Status: %d | Mode: %d | SP: %3d | Speed: %2d | BT: %3d | RT: %2d | Err: %2d",
             x[3],        x[5],        x[8],      x[9],     x[10],       x[13],    x[15],    x[17]
@@ -129,7 +129,7 @@ sensor:
           id(heater_target_temperature).publish_state((int)target_value);
           id(heater_target_power).publish_state(NAN);
         } 
-        else{
+        else {
           id(heater_control_target_temperature).publish_state(NAN);
           id(heater_control_target_power).publish_state((float)x[9] * 10);
       
@@ -156,9 +156,17 @@ sensor:
           id(heater_target_temperature).publish_state(NAN);
         }
       
-        if ("Idle" == id(heater_burner_status).state) {
+        std::string status = id(heater_burner_status).state;
+      
+        if ("Shutting down" == status) {
+          id(heater_speed).publish_state("0");
+        }
+        else if ("Idle" == status) {
           id(heater_speed).publish_state("0");
           id(heater_target_power).publish_state(0);
+        }
+        else if ("Self test running" == status) {
+          id(heater_speed).publish_state("0");
         }
       }
       return 0;
@@ -166,6 +174,7 @@ sensor:
 script:
   # Interface
   - id: !extend heater_turn_on
+    mode: restart
     then:
       - if:
           condition:
@@ -183,6 +192,7 @@ script:
             - script.execute: request_data
 
   - id: !extend heater_turn_off
+    mode: restart
     then:
       - if:
           condition:
@@ -200,6 +210,7 @@ script:
             - script.execute: request_data
 
   - id: !extend heater_set_power
+    mode: restart
     then:
       - if:
           condition:
@@ -224,6 +235,7 @@ script:
             - script.execute: heater_turn_off
 
   - id: !extend heater_set_temperature
+    mode: restart
     then:
       - if:
           condition:
@@ -245,6 +257,7 @@ script:
 
   #  Heater Specific
   - id: request_data
+    mode: restart
     then:
       - ble_client.ble_write:
           id: heater_ble
@@ -254,6 +267,7 @@ script:
       - delay: 200ms
 
   - id: set_heater_mode_temperature
+    mode: restart
     then:
       - if:
           condition:
@@ -269,6 +283,7 @@ script:
             - delay: 200ms
 
   - id: set_heater_mode_power
+    mode: restart
     then:
       - if:
           condition:
@@ -284,6 +299,7 @@ script:
             - delay: 200ms
 
   - id: heater_set_target_value
+    mode: restart
     parameters:
       x: int
     then:

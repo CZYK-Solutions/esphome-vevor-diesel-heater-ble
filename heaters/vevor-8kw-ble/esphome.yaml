@@ -2,3 +2,4 @@ packages:
   heater: !include vevor-8kw-ble.yaml
   sensors: !include common/sensors.yaml
   controls: !include common/controls.yaml
+  diesel: !include common/diesel.yaml
