@@ -9,7 +9,6 @@ sensor:
     unit_of_measurement: "L/h"
     accuracy_decimals: 3
     icon: "mdi:pipe-valve"
-    internal: true
     lambda: |-
       std::string status = id(heater_burner_status).state;
 
@@ -65,4 +64,3 @@ sensor:
     sensor: heater_diesel_flow_rate
     time_unit: h
     integration_method: left
-    internal: true
