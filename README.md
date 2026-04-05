@@ -27,7 +27,7 @@ substitutions:
   mac_address: "AA:BB:CC:DD:EE:FF"
 
 packages:
-  base: github.com/CZYK-Solutions/esphome-vevor-diesel-heater-ble/esphome.yaml
+  base: github://CZYK-Solutions/esphome-vevor-diesel-heater-ble/esphome.yaml@main
 ```
 
 Flash the device. It should connect to your heater and start reporting in Home Assistant automatically
