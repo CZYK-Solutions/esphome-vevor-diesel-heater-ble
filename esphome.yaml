@@ -1,4 +1,6 @@
 substitutions:
+  name: vevor-diesel-heater
+  friendly_name: Vevor Diesel Heater
   mac_address: "AA:BB:CC:DD:EE:FF"
 
 packages:
@@ -6,8 +8,8 @@ packages:
   heater: !include heaters/vevor-8kw-ble/esphome.yaml
 
 esphome:
-  name: vevor-diesel-heater
-  friendly_name: Vevor Diesel Heater
+  name: ${name}
+  friendly_name: ${friendly_name}
   name_add_mac_suffix: false
 
 esp32:
